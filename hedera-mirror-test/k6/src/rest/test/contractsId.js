@@ -18,25 +18,25 @@
  * ‍
  */
 
-import http from "k6/http";
+import { authorizedGet } from '../../lib/ledgerworks-auth.js';
 
-import {TestScenarioBuilder} from '../../lib/common.js';
-import {urlPrefix} from '../../lib/constants.js';
-import {isSuccess} from "./common.js";
-import {setupTestParameters} from "./bootstrapEnvParameters.js";
+import { TestScenarioBuilder } from '../../lib/common.js';
+import { urlPrefix } from '../../lib/constants.js';
+import { isSuccess } from "./common.js";
+import { setupTestParameters } from "./bootstrapEnvParameters.js";
 
 const urlTag = '/contracts/{id}';
 
-const {options, run} = new TestScenarioBuilder()
+const { options, run } = new TestScenarioBuilder()
   .name('contractsId') // use unique scenario name among all tests
-  .tags({url: urlTag})
+  .tags({ url: urlTag })
   .request((testParameters) => {
     const url = `${testParameters['BASE_URL']}${urlPrefix}/contracts/${testParameters['DEFAULT_CONTRACT_ID']}`;
-    return http.get(url);
+    return authorizedGet(url);
   })
   .check('Contracts Id  OK', isSuccess)
   .build();
 
-export {options, run};
+export { options, run };
 
 export const setup = setupTestParameters;

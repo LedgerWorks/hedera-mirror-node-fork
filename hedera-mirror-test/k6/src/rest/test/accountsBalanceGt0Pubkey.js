@@ -18,25 +18,25 @@
  * ‍
  */
 
-import http from "k6/http";
+import { authorizedGet } from '../../lib/ledgerworks-auth.js';
 
-import {TestScenarioBuilder} from '../../lib/common.js';
-import {accountListName, urlPrefix} from '../../lib/constants.js';
-import {isValidListResponse} from "./common.js";
-import {setupTestParameters} from "./bootstrapEnvParameters.js";
+import { TestScenarioBuilder } from '../../lib/common.js';
+import { accountListName, urlPrefix } from '../../lib/constants.js';
+import { isValidListResponse } from "./common.js";
+import { setupTestParameters } from "./bootstrapEnvParameters.js";
 
 const urlTag = '/accounts?account.balance=gt:0&account.publickey={publicKey}';
 
-const {options, run} = new TestScenarioBuilder()
+const { options, run } = new TestScenarioBuilder()
   .name('accountsBalanceGt0Pubkey') // use unique scenario name among all tests
-  .tags({url: urlTag})
+  .tags({ url: urlTag })
   .request((testParameters) => {
     const url = `${testParameters['BASE_URL']}${urlPrefix}/accounts?account.balance=gt:0&account.publickey=${testParameters['DEFAULT_PUBLIC_KEY']}`;
-    return http.get(url);
+    return authorizedGet(url);
   })
   .check('Accounts balance gt:0 with publickey OK', (r) => isValidListResponse(r, accountListName))
   .build();
 
-export {options, run};
+export { options, run };
 
 export const setup = setupTestParameters;

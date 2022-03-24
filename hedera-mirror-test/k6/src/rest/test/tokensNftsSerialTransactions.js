@@ -18,25 +18,25 @@
  * ‍
  */
 
-import http from "k6/http";
+import { authorizedGet } from '../../lib/ledgerworks-auth.js';
 
-import {TestScenarioBuilder} from '../../lib/common.js';
-import {transactionListName, urlPrefix} from '../../lib/constants.js';
-import {isValidListResponse} from "./common.js";
-import {setupTestParameters} from "./bootstrapEnvParameters.js";
+import { TestScenarioBuilder } from '../../lib/common.js';
+import { transactionListName, urlPrefix } from '../../lib/constants.js';
+import { isValidListResponse } from "./common.js";
+import { setupTestParameters } from "./bootstrapEnvParameters.js";
 
 const urlTag = '/tokens/{id}/nfts/{serial}/transactions';
 
-const {options, run} = new TestScenarioBuilder()
+const { options, run } = new TestScenarioBuilder()
   .name('tokensNftsSerialTransactions') // use unique scenario name among all tests
-  .tags({url: urlTag})
+  .tags({ url: urlTag })
   .request((testParameters) => {
     const url = `${testParameters['BASE_URL']}${urlPrefix}/tokens/${testParameters['DEFAULT_NFT_ID']}/nfts/${testParameters['DEFAULT_NFT_SERIAL']}/transactions`;
-    return http.get(url);
+    return authorizedGet(url);
   })
   .check('Tokens nfts serial transactions OK', (r) => isValidListResponse(r, transactionListName))
   .build();
 
-export {options, run};
+export { options, run };
 
 export const setup = setupTestParameters;

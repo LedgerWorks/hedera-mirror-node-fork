@@ -18,25 +18,25 @@
  * ‍
  */
 
-import http from "k6/http";
+import { authorizedGet } from '../../lib/ledgerworks-auth.js';
 
-import {TestScenarioBuilder} from '../../lib/common.js';
-import {tokenListName, urlPrefix} from '../../lib/constants.js';
-import {isValidListResponse} from "./common.js";
-import {setupTestParameters} from "./bootstrapEnvParameters.js";
+import { TestScenarioBuilder } from '../../lib/common.js';
+import { tokenListName, urlPrefix } from '../../lib/constants.js';
+import { isValidListResponse } from "./common.js";
+import { setupTestParameters } from "./bootstrapEnvParameters.js";
 
 const urlTag = '/tokens?token.id=ne:100000';
 
-const {options, run} = new TestScenarioBuilder()
+const { options, run } = new TestScenarioBuilder()
   .name('tokensTokenIdNe') // use unique scenario name among all tests
-  .tags({url: urlTag})
+  .tags({ url: urlTag })
   .request((testParameters) => {
     const url = `${testParameters['BASE_URL']}${urlPrefix}${urlTag}`;
-    return http.get(url);
+    return authorizedGet(url);
   })
   .check('Tokens token id ne 100000 OK', (r) => isValidListResponse(r, tokenListName))
   .build();
 
-export {options, run};
+export { options, run };
 
 export const setup = setupTestParameters;

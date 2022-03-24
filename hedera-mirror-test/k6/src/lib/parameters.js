@@ -19,6 +19,7 @@
  */
 
 import http from 'k6/http';
+import { headers } from './ledgerworks-auth.js';
 
 import {
   accountListName,
@@ -30,7 +31,7 @@ import {
 } from "./constants.js";
 
 const getValidResponse = (requestUrl, requestBody, httpVerbMethod) => {
-  const response = httpVerbMethod(requestUrl, JSON.stringify(requestBody));
+  const response = httpVerbMethod(requestUrl, { headers });
   if (response.status !== 200) {
     throw new Error(`${response.status} received when requesting ${requestUrl}`);
   }
@@ -102,7 +103,7 @@ export const computeNftParameters = (configuration) => {
     () => {
       const tokenPath = `${configuration.baseApiUrl}/tokens?type=NON_FUNGIBLE_UNIQUE&limit=1&order=desc`;
       const firstNftFromTokenList = getFirstEntity(tokenPath, tokenListName);
-      return {DEFAULT_NFT_ID: firstNftFromTokenList.token_id};
+      return { DEFAULT_NFT_ID: firstNftFromTokenList.token_id };
     }
   );
 
@@ -111,7 +112,7 @@ export const computeNftParameters = (configuration) => {
     () => {
       const nftPath = `${configuration.baseApiUrl}/tokens/${tokenProperties.DEFAULT_NFT_ID}/nfts?limit=1&order=desc`;
       const firstNft = getFirstEntity(nftPath, nftListName);
-      return {DEFAULT_NFT_SERIAL: firstNft.serial_number};
+      return { DEFAULT_NFT_SERIAL: firstNft.serial_number };
     }
   );
 
@@ -161,7 +162,7 @@ export const computeTopicInfo = (configuration) => {
     () => {
       const transactionPath = `${configuration.baseApiUrl}/transactions?transactiontype=CONSENSUSSUBMITMESSAGE&result=success&limit=1&order=desc`;
       const DEFAULT_TOPIC_ID = getFirstEntity(transactionPath, transactionListName).entity_id;
-      return {DEFAULT_TOPIC_ID};
+      return { DEFAULT_TOPIC_ID };
     }
   );
 
@@ -229,7 +230,7 @@ export const computeNetworkInfo = (rosettaApiUrl) =>
     ['DEFAULT_NETWORK'],
     () => {
       const requestUrl = `${rosettaApiUrl}/rosetta/network/list`;
-      const response = getValidResponse(requestUrl, {"metadata": {}}, http.post);
+      const response = getValidResponse(requestUrl, { "metadata": {} }, http.post);
       const networks = response.network_identifiers;
       if (networks.length === 0) {
         throw new Error(`It was not possible to find a network at ${rosettaApiUrl}`);

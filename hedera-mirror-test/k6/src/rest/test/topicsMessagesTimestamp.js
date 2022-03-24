@@ -18,25 +18,25 @@
  * ‍
  */
 
-import http from "k6/http";
+import { authorizedGet } from '../../lib/ledgerworks-auth.js';
 
-import {TestScenarioBuilder} from '../../lib/common.js';
-import {urlPrefix} from '../../lib/constants.js';
-import {isSuccess} from "./common.js";
-import {setupTestParameters} from "./bootstrapEnvParameters.js";
+import { TestScenarioBuilder } from '../../lib/common.js';
+import { urlPrefix } from '../../lib/constants.js';
+import { isSuccess } from "./common.js";
+import { setupTestParameters } from "./bootstrapEnvParameters.js";
 
 const urlTag = '/topics/messages/{timestamp}';
 
-const {options, run} = new TestScenarioBuilder()
+const { options, run } = new TestScenarioBuilder()
   .name('topicsMessageTimestamp') // use unique scenario name among all tests
-  .tags({url: urlTag})
+  .tags({ url: urlTag })
   .request((testParameters) => {
     const url = `${testParameters['BASE_URL']}${urlPrefix}/topics/messages/${testParameters['DEFAULT_TOPIC_TIMESTAMP']}`;
-    return http.get(url);
+    return authorizedGet(url);
   })
   .check('Topics messages timestamp OK', isSuccess)
   .build();
 
-export {options, run};
+export { options, run };
 
 export const setup = setupTestParameters;

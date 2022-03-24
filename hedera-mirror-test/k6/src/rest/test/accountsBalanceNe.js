@@ -18,25 +18,25 @@
  * ‍
  */
 
-import http from "k6/http";
+import { authorizedGet } from '../../lib/ledgerworks-auth.js';
 
-import {TestScenarioBuilder} from '../../lib/common.js';
-import {accountListName, urlPrefix} from '../../lib/constants.js';
-import {isValidListResponse} from "./common.js";
-import {setupTestParameters} from "./bootstrapEnvParameters.js";
+import { TestScenarioBuilder } from '../../lib/common.js';
+import { accountListName, urlPrefix } from '../../lib/constants.js';
+import { isValidListResponse } from "./common.js";
+import { setupTestParameters } from "./bootstrapEnvParameters.js";
 
 const urlTag = '/accounts?account.balance=ne:{balance}&order=desc';
 
-const {options, run} = new TestScenarioBuilder()
+const { options, run } = new TestScenarioBuilder()
   .name('accountsBalanceNe') // use unique scenario name among all tests
-  .tags({url: urlTag})
+  .tags({ url: urlTag })
   .request((testParameters) => {
     const url = `${testParameters['BASE_URL']}${urlPrefix}/accounts?account.balance=ne:${testParameters['DEFAULT_ACCOUNT_BALANCE']}&order=desc`;
-    return http.get(url);
+    return authorizedGet(url);
   })
   .check('Accounts balance NE OK', (r) => isValidListResponse(r, accountListName))
   .build();
 
-export {options, run};
+export { options, run };
 
 export const setup = setupTestParameters;

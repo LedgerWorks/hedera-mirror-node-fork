@@ -18,25 +18,25 @@
  * ‍
  */
 
-import http from "k6/http";
+import { authorizedGet } from '../../lib/ledgerworks-auth.js';
 
-import {TestScenarioBuilder} from '../../lib/common.js';
-import {transactionListName, urlPrefix} from '../../lib/constants.js';
-import {isValidListResponse} from "./common.js";
-import {setupTestParameters} from "./bootstrapEnvParameters.js";
+import { TestScenarioBuilder } from '../../lib/common.js';
+import { transactionListName, urlPrefix } from '../../lib/constants.js';
+import { isValidListResponse } from "./common.js";
+import { setupTestParameters } from "./bootstrapEnvParameters.js";
 
 const urlTag = '/transactions?account.id={accountId}';
 
-const {options, run} = new TestScenarioBuilder()
+const { options, run } = new TestScenarioBuilder()
   .name('transactionsAccountId') // use unique scenario name among all tests
-  .tags({url: urlTag})
+  .tags({ url: urlTag })
   .request((testParameters) => {
     const url = `${testParameters['BASE_URL']}${urlPrefix}/transactions?account.id=${testParameters['DEFAULT_ACCOUNT_ID']}&limit=${testParameters['DEFAULT_LIMIT']}`;
-    return http.get(url);
+    return authorizedGet(url);
   })
   .check('Transactions by account id OK', (r) => isValidListResponse(r, transactionListName))
   .build();
 
-export {options, run};
+export { options, run };
 
 export const setup = setupTestParameters;

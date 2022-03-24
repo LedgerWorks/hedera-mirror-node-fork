@@ -18,26 +18,26 @@
  * ‍
  */
 
-import http from "k6/http";
+import { authorizedGet } from '../../lib/ledgerworks-auth.js';
 
-import {TestScenarioBuilder} from '../../lib/common.js';
-import {messageListName, urlPrefix} from '../../lib/constants.js';
-import {isValidListResponse} from "./common.js";
-import {setupTestParameters} from "./bootstrapEnvParameters.js";
+import { TestScenarioBuilder } from '../../lib/common.js';
+import { messageListName, urlPrefix } from '../../lib/constants.js';
+import { isValidListResponse } from "./common.js";
+import { setupTestParameters } from "./bootstrapEnvParameters.js";
 
 const urlTag = '/topics/{id}/messages/{sequenceNumber}';
 
-const {options, run} = new TestScenarioBuilder()
+const { options, run } = new TestScenarioBuilder()
   .name('topicsIdMessagesSequence') // use unique scenario name among all tests
-  .tags({url: urlTag})
+  .tags({ url: urlTag })
   .request((testParameters) => {
     const url = `${testParameters['BASE_URL']}${urlPrefix}/topics/${testParameters['DEFAULT_TOPIC_ID']}/messages/${testParameters['DEFAULT_TOPIC_SEQUENCE']}`;
-    return http.get(url);
+    return authorizedGet(url);
   })
   .check('Topics id messages sequenceNumber OK', (r) => isValidListResponse(r, messageListName))
   .build();
 
 
-export {options, run};
+export { options, run };
 
 export const setup = setupTestParameters;
