@@ -40,6 +40,9 @@ const getValidResponse = (requestUrl, requestBody, httpVerbMethod) => {
 
 const getFirstEntity = (entityPath, key) => {
   const body = getValidResponse(entityPath, null, http.get);
+  if (!body.hasOwnProperty(key)) {
+    throw new Error(`Missing ${key} property in ${entityPath} response`);
+  }
   const entity = body[key];
   if (entity.length === 0) {
     throw new Error(`No ${key} were found in the response for request at ${entityPath}`);
@@ -146,12 +149,13 @@ export const computeFungibleTokenParameters = (configuration) =>
 
 export const computeTransactionParameters = (configuration) =>
   computeProperties(
-    ['DEFAULT_TRANSACTION_ID'],
+    ['DEFAULT_TRANSACTION_ID', 'DEFAULT_TRANSACTION_TYPE'],
     () => {
       const tokenPath = `${configuration.baseApiUrl}/transactions?limit=1&transactiontype=cryptotransfer&order=desc`;
       const firstTransaction = getFirstEntity(tokenPath, transactionListName)
       return {
-        DEFAULT_TRANSACTION_ID: firstTransaction.transaction_id
+        DEFAULT_TRANSACTION_ID: firstTransaction.transaction_id,
+        DEFAULT_TRANSACTION_TYPE: firstTransaction.name
       };
     }
   );
