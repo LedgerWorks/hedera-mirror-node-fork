@@ -18,7 +18,7 @@
  * ‍
  */
 
-import http from "k6/http";
+import { authorizedGet } from '../../lib/ledgerworks-auth.js';
 
 import { TestScenarioBuilder } from '../../lib/common.js';
 import { transactionListName, urlPrefix } from '../../lib/constants.js';
@@ -32,7 +32,7 @@ const { options, run } = new TestScenarioBuilder()
   .tags({ url: urlTag })
   .request((testParameters) => {
     const url = `${testParameters['BASE_URL']}${urlPrefix}/transactions?transactionType=${testParameters['DEFAULT_TRANSACTION_TYPE']}&limit=${testParameters['DEFAULT_LIMIT']}&order=asc`;
-    return http.get(url);
+    return authorizedGet(url);
   })
   .check('Transactions by transaction type OK', (r) => isValidListResponse(r, transactionListName))
   .build();

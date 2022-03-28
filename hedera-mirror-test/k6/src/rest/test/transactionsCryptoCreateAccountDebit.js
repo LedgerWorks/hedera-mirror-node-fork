@@ -27,7 +27,7 @@
  * An attempt to make this test more generic seems to have low-value while also making variable names confusing.
  */
 
-import http from "k6/http";
+import { authorizedGet } from '../../lib/ledgerworks-auth.js';
 
 import { TestScenarioBuilder } from '../../lib/common.js';
 import { transactionListName, urlPrefix } from '../../lib/constants.js';
@@ -41,7 +41,7 @@ const { options, run } = new TestScenarioBuilder()
   .tags({ url: urlTag })
   .request((testParameters) => {
     const url = `${testParameters['BASE_URL']}${urlPrefix}/transactions?transactiontype=CRYPTOCREATEACCOUNT&type=debit&order=asc&limit=${testParameters['DEFAULT_LIMIT']}`;
-    return http.get(url);
+    return authorizedGet(url);
   })
   .check('Transactions of type CRYPTOCREATEACCOUNT and debit balance modification type OK', (r) => isValidListResponse(r, transactionListName))
   .build();
