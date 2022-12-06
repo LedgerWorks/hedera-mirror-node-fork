@@ -250,19 +250,6 @@ class RecordFileParserTest extends AbstractStreamFileParserTest<RecordFileParser
     }
 
     @Test
-    void hashMismatch() {
-        // given
-        var streamFile1 = (RecordFile) getStreamFile();
-        var streamFile2 = (RecordFile) getStreamFile();
-        streamFile1.setIndex(streamFile2.getIndex() - 2);
-        streamFile1.setVersion(5);
-        when(recordFileRepository.findLatest()).thenReturn(Optional.of(streamFile1));
-
-        // when
-        assertThatThrownBy(() -> parser.parse(streamFile2)).isInstanceOf(HashMismatchException.class);
-    }
-
-    @Test
     void noExistingRecordFile() {
         // given
         int offset = 2;
