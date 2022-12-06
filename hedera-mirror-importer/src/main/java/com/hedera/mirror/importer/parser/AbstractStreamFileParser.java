@@ -115,14 +115,6 @@ public abstract class AbstractStreamFileParser<T extends StreamFile> implements 
             return false;
         }
 
-        var actualHash = streamFile.getPreviousHash();
-        var expectedHash = lastStreamFile.getHash();
-
-        // Verify hash chain
-        if (streamFile.getType().isChained() && !expectedHash.contentEquals(actualHash)) {
-            throw new HashMismatchException(name, expectedHash, actualHash, getClass().getSimpleName());
-        }
-
         return true;
     }
 }
